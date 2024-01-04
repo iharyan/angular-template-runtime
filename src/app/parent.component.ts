@@ -1,9 +1,9 @@
 import {
   AfterViewInit,
-  Compiler,
   Component,
   Injector,
   NgModule,
+  Type,
   ViewChild,
   ViewContainerRef,
   createNgModule
@@ -37,7 +37,8 @@ export class ParentComponent implements AfterViewInit {
     })(class {
     });
 
-    const moduleRef = createNgModule(module, this.injector);
+    const moduleRef = createNgModule(module, this.injector);        
+    this.container.createComponent(component, { ngModuleRef: moduleRef });
 
   //   // Asynchronously (recommended) compile the module and the component.
   //   this.compiler.compileModuleAndAllComponentsAsync(module)
