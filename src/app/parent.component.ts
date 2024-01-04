@@ -2,9 +2,11 @@ import {
   AfterViewInit,
   Compiler,
   Component,
+  Injector,
   NgModule,
   ViewChild,
-  ViewContainerRef
+  ViewContainerRef,
+  createNgModule
 } from '@angular/core';
 
 @Component({
@@ -14,12 +16,12 @@ import {
 export class ParentComponent implements AfterViewInit {
   @ViewChild('container', {read: ViewContainerRef, static: false}) container: ViewContainerRef;
 
-  constructor(private compiler: Compiler) {
+  constructor(private injector: Injector) {
   }
 
   ngAfterViewInit() {
-    // Must clear cache.
-    this.compiler.clearCache();
+    // Must clear cache. //TODO: is this still necessary in some way?
+    //this.compiler.clearCache();
 
     // Define the component using Component decorator.
     const component = Component({
@@ -35,15 +37,17 @@ export class ParentComponent implements AfterViewInit {
     })(class {
     });
 
-    // Asynchronously (recommended) compile the module and the component.
-    this.compiler.compileModuleAndAllComponentsAsync(module)
-      .then(factories => {
-        // Get the component factory.
-        const componentFactory = factories.componentFactories[0];
-        // Create the component and add to the view.
-        const componentRef = this.container.createComponent(componentFactory);
-        // Modifying the property and triggering change detection.
-        setTimeout(() => componentRef.instance.test = 'some other value', 2000);
-      });
+    const moduleRef = createNgModule(module, this.injector);
+
+  //   // Asynchronously (recommended) compile the module and the component.
+  //   this.compiler.compileModuleAndAllComponentsAsync(module)
+  //     .then(factories => {
+  //       // Get the component factory.
+  //       const componentFactory = factories.componentFactories[0];
+  //       // Create the component and add to the view.
+  //       const componentRef = this.container.createComponent(componentFactory);
+  //       // Modifying the property and triggering change detection.
+  //       setTimeout(() => componentRef.instance.test = 'some other value', 2000);
+  //     });
   }
 }
